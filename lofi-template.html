@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoFi・チル作曲テンプレ for Logic Pro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Space+Grotesk:wght@400;700&display=swap');
+  :root {
+    --bg: #1a1814; --surface: #211f1a; --card: #272420; --border: #3a3530;
+    --accent: #c8a96e; --accent2: #7eb8a4; --accent3: #d4846a;
+    --text: #e8e0d0; --muted: #7a7060; --glow: rgba(200,169,110,0.2); --glow2: rgba(126,184,164,0.2);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  .hero { position: relative; text-align: center; padding: 60px 20px 48px; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,169,110,.2) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 10% 100%, rgba(126,184,164,.15) 0%, transparent 60%); pointer-events: none; }
+  .hero-eyebrow { font-family: 'Space Grotesk', sans-serif; font-size: .7rem; letter-spacing: .22em; color: var(--accent2); text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; color: var(--accent); line-height: 1.2; margin-bottom: 16px; }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { color: var(--muted); font-size: .95rem; max-width: 480px; margin: 0 auto; line-height: 1.8; }
+  .badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+  .badge { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: .75rem; color: var(--accent); }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 16px 80px; }
+  .sec-title { font-family: 'Space Grotesk', sans-serif; font-size: .65rem; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; margin: 40px 0 16px; display: flex; align-items: center; gap: 10px; }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+  .param-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .param-table th { text-align: left; padding: 10px 14px; color: var(--accent2); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px solid var(--border); font-weight: 400; }
+  .param-table td { padding: 10px 14px; border-bottom: 1px solid rgba(58,53,48,.6); vertical-align: top; }
+  .param-table tr:last-child td { border-bottom: none; }
+  .param-table td:first-child { color: var(--text); font-weight: 700; width: 130px; }
+  .param-table td:nth-child(2) { color: var(--accent); }
+  .param-table td:nth-child(3) { color: var(--muted); font-size: .8rem; }
+  .struct-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .struct-block { flex: 1; min-width: 80px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; }
+  .struct-block.highlight { border-color: var(--accent); box-shadow: 0 0 12px var(--glow); }
+  .struct-name { font-family: 'Space Grotesk', sans-serif; font-size: .72rem; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
+  .struct-bars { font-size: .65rem; color: var(--muted); margin-bottom: 4px; }
+  .struct-note { font-size: .63rem; color: var(--accent2); line-height: 1.5; }
+  .struct-arrow { display: flex; align-items: center; color: var(--muted); font-size: 1rem; padding-top: 20px; }
+  .prog-list { display: flex; flex-direction: column; gap: 10px; }
+  .prog-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; transition: border-color .2s; }
+  .prog-item:hover { border-color: var(--accent); }
+  .prog-name { font-size: .7rem; color: var(--accent2); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .prog-chords { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .prog-chord { background: rgba(200,169,110,.12); border: 1px solid rgba(200,169,110,.3); border-radius: 8px; padding: 5px 14px; font-family: 'Space Grotesk', sans-serif; font-size: .9rem; font-weight: 700; color: var(--accent); }
+  .prog-arrow { color: var(--muted); font-size: .9rem; }
+  .prog-scene { font-size: .78rem; color: var(--muted); margin-top: 8px; }
+  .prog-ext { margin-top: 8px; background: rgba(126,184,164,.08); border-left: 2px solid var(--accent2); padding: 6px 12px; border-radius: 0 6px 6px 0; font-size: .78rem; color: var(--accent2); }
+  .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+  .palette-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: all .2s; }
+  .palette-card:hover { border-color: var(--accent); box-shadow: 0 0 12px var(--glow); }
+  .palette-cat { font-size: .65rem; color: var(--accent3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .palette-name { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+  .palette-logic { font-size: .72rem; color: var(--muted); line-height: 1.6; }
+  .trick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .trick-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: all .2s; }
+  .trick-card:hover { border-color: var(--accent2); }
+  .trick-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .trick-name { font-weight: 700; font-size: .9rem; margin-bottom: 6px; color: var(--accent); }
+  .trick-desc { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+  .trick-how { font-size: .73rem; color: var(--accent2); margin-top: 6px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step { display: grid; grid-template-columns: 48px 1fr; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+  .step:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--glow); }
+  .step-num { background: linear-gradient(180deg, var(--accent) 0%, var(--accent3) 100%); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: .95rem; font-weight: 700; color: #1a1814; min-height: 56px; }
+  .step-body { padding: 14px 18px; }
+  .step-label { font-size: .7rem; color: var(--accent2); letter-spacing: .1em; margin-bottom: 4px; text-transform: uppercase; }
+  .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .step-desc { font-size: .83rem; color: var(--muted); line-height: 1.65; }
+  .step-tip { margin-top: 8px; background: rgba(200,169,110,.08); border-left: 2px solid var(--accent); padding: 6px 12px; border-radius: 0 6px 6px 0; font-size: .78rem; color: var(--accent); }
+  .scale-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .scale-note { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 60px; transition: all .2s; }
+  .scale-note:hover { border-color: var(--accent); }
+  .scale-note.root { border-color: var(--accent); background: rgba(200,169,110,.12); }
+  .scale-note-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--accent); }
+  .scale-note-jp { font-size: .65rem; color: var(--muted); margin-top: 2px; }
+  .scale-note-feel { font-size: .6rem; color: var(--accent2); margin-top: 4px; }
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: border-color .2s; user-select: none; }
+  .check-item:hover { border-color: var(--accent2); }
+  .check-item.done { opacity: .45; }
+  .check-item.done .check-box { background: var(--accent2); border-color: var(--accent2); }
+  .check-item.done .check-box::after { opacity: 1; }
+  .check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 6px; flex-shrink: 0; margin-top: 1px; position: relative; transition: all .2s; }
+  .check-box::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: .75rem; color: #1a1814; opacity: 0; transition: opacity .2s; }
+  .check-text { font-size: .85rem; line-height: 1.55; }
+  .footer { text-align: center; padding: 32px 16px; color: var(--muted); font-size: .75rem; border-top: 1px solid var(--border); margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <p class="hero-eyebrow">Logic Pro × 作曲テンプレ vol.2</p>
+  <h1>LoFi <span>&amp;</span> Chill<br>SONGCRAFT</h1>
+  <p>難しいことは何もない。<br>ゆっくり・ぼんやり・あたたかい音楽を、<br>このページの順番通りに作るだけ。</p>
+  <div class="badge-row">
+    <span class="badge">中高大学生向け</span>
+    <span class="badge">Logic Pro</span>
+    <span class="badge">思考停止OK</span>
+    <span class="badge">LoFi・チル</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="sec-title">STEP 01 ― まず設定する</div>
+  <table class="param-table" style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    <thead><tr><th>パラメータ</th><th>おすすめ値</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>BPM</td><td>75〜85</td><td>LoFiの核心。遅さが「チル感」を生む。迷ったら80</td></tr>
+      <tr><td>キー</td><td>F major（Fメジャー）</td><td>あたたかく穏やか。ジャズっぽさも出る</td></tr>
+      <tr><td>拍子</td><td>4/4</td><td>これ以外にしない</td></tr>
+      <tr><td>グリッド</td><td>1/8（8分音符）</td><td>タイミングをわざとずらすのがLoFiの味</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-title">STEP 02 ― 構成（シンプルでOK）</div>
+  <p style="font-size:.82rem;color:var(--muted);margin-bottom:14px;">LoFiに「サビ」は必要なし。ループ感が大事。</p>
+  <div class="struct-row">
+    <div class="struct-block"><div class="struct-name">INTRO</div><div class="struct-bars">8小節</div><div class="struct-note">ピアノだけ。静かに始まる</div></div>
+    <div class="struct-arrow">→</div>
+    <div class="struct-block highlight"><div class="struct-name">MAIN LOOP A</div><div class="struct-bars">16小節</div><div class="struct-note">メインの雰囲気。全楽器が入る</div></div>
+    <div class="struct-arrow">→</div>
+    <div class="struct-block"><div class="struct-name">BREAK</div><div class="struct-bars">8小節</div><div class="struct-note">ドラムを抜く。息継ぎ</div></div>
+    <div class="struct-arrow">→</div>
+    <div class="struct-block highlight"><div class="struct-name">MAIN LOOP B</div><div class="struct-bars">16小節</div><div class="struct-note">Aと同じでOK。少し音を足してもいい</div></div>
+    <div class="struct-arrow">→</div>
+    <div class="struct-block"><div class="struct-name">OUTRO</div><div class="struct-bars">8小節</div><div class="struct-note">徐々にフェードアウト</div></div>
+  </div>
+
+  <div class="sec-title">STEP 03 ― コード進行（これだけ覚える）</div>
+  <div class="prog-list">
+    <div class="prog-item">
+      <div class="prog-name">🌙 メインループ ― LoFi定番進行</div>
+      <div class="prog-chords">
+        <span class="prog-chord">Fmaj7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Em7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Am7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Dm7</span>
+      </div>
+      <div class="prog-ext">「7th（セブンス）」がつくのがLoFiのポイント。ふわっとした響きになる</div>
+      <div class="prog-scene">🎵 これを延々と繰り返すだけ。終わりを感じさせないのがLoFi</div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-name">☕ バリエーション ― 少し切ない版</div>
+      <div class="prog-chords">
+        <span class="prog-chord">Am7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Dm7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Gmaj7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Cmaj7</span>
+      </div>
+      <div class="prog-scene">🎵 BREAKセクションで使うと雰囲気が変わる</div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-name">🌧 雨の日版 ― 内省的な進行</div>
+      <div class="prog-chords">
+        <span class="prog-chord">Dm7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Am7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">Bbmaj7</span><span class="prog-arrow">→</span>
+        <span class="prog-chord">C7</span>
+      </div>
+      <div class="prog-scene">🎵 どんよりした天気の日に聴きたい系。勉強BGMにもなる</div>
+    </div>
+  </div>
+
+  <div class="sec-title">STEP 04 ― Logic Proで使う音源</div>
+  <div class="palette-grid">
+    <div class="palette-card"><div class="palette-cat">🥁 ドラム</div><div class="palette-name">Drum Machine Designer</div><div class="palette-logic">プリセット：<br>「Vintage Kit」<br>かならずヴィンテージ系を選ぶ</div></div>
+    <div class="palette-card"><div class="palette-cat">🎹 ピアノ</div><div class="palette-name">Vintage Electric Piano</div><div class="palette-logic">プリセット：<br>「Suitcase EP」<br>LoFiの主役。これ一択</div></div>
+    <div class="palette-card"><div class="palette-cat">🎸 ベース</div><div class="palette-name">Bass Amp Designer</div><div class="palette-logic">プリセット：<br>「Vintage Bass」<br>ルート音だけ弾く</div></div>
+    <div class="palette-card"><div class="palette-cat">🎷 雰囲気</div><div class="palette-name">Studio Horns</div><div class="palette-logic">プリセット：<br>「Muted Trumpet」<br>たまに短く鳴らすだけでジャズっぽくなる</div></div>
+    <div class="palette-card"><div class="palette-cat">🌿 テクスチャ</div><div class="palette-name">Alchemy</div><div class="palette-logic">プリセット：<br>「Tape Noise」か「Rain」<br>音量を下げて常に鳴らす</div></div>
+    <div class="palette-card"><div class="palette-cat">🎵 メロディ</div><div class="palette-name">Vintage Electric Piano</div><div class="palette-logic">コードと同じ音源でOK。<br>音量を上げてシンプルなフレーズを乗せる</div></div>
+  </div>
+
+  <div class="sec-title">STEP 05 ― LoFiっぽくする魔法のテクニック</div>
+  <p style="font-size:.82rem;color:var(--muted);margin-bottom:14px;">これをやるだけで「なんかLoFiっぽい」になる。</p>
+  <div class="trick-grid">
+    <div class="trick-card"><div class="trick-icon">🎞</div><div class="trick-name">Vinyl Distortion</div><div class="trick-desc">レコード盤の「シャー」という音を加える</div><div class="trick-how">→ マスタートラックに「Bitcrusher」を挿してDepthを少しだけ上げる</div></div>
+    <div class="trick-card"><div class="trick-icon">🌊</div><div class="trick-name">タイミングをずらす</div><div class="trick-desc">ピアノの音を少しだけ遅らせると「人間らしさ」が出る</div><div class="trick-how">→ ピアノロールで音符を数ティック（5〜10）後ろにずらす</div></div>
+    <div class="trick-card"><div class="trick-icon">🔉</div><div class="trick-name">ローパスフィルター</div><div class="trick-desc">高音をカットして「こもった」音にする</div><div class="trick-how">→ Channel EQで8kHz以上をばっさり下げる</div></div>
+    <div class="trick-card"><div class="trick-icon">🏠</div><div class="trick-name">リバーブを深くかける</div><div class="trick-desc">「部屋の中で鳴っている」感じを出す</div><div class="trick-how">→ ChromaVerb をピアノに挿して「Room」系を選ぶ</div></div>
+    <div class="trick-card"><div class="trick-icon">🎚</div><div class="trick-name">ドラムを弱くする</div><div class="trick-desc">ドラムが主役にならないのがLoFi</div><div class="trick-how">→ ドラムのフェーダーを−8〜−10dBまで下げる</div></div>
+    <div class="trick-card"><div class="trick-icon">☁️</div><div class="trick-name">コードは長く伸ばす</div><div class="trick-desc">音符を小節いっぱいまで伸ばすと眠くなる（いい意味で）</div><div class="trick-how">→ ピアノロールで音符の右端をドラッグして伸ばす</div></div>
+  </div>
+
+  <div class="sec-title">STEP 06 ― Logic Proでの作業順</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-label">プロジェクト作成</div><div class="step-title">BPMを80に設定してプロジェクトを開く</div><div class="step-desc">File → New Project → BPMを80に変更。これだけで雰囲気が出始める。</div><div class="step-tip">💡 アニソンテンプレの倍くらい遅い。最初は違和感があるかも</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-label">ドラムを作る</div><div class="step-title">Drum Machine Designerで「Vintage Kit」を選ぶ</div><div class="step-desc">キックを1・3拍目、スネアを2・4拍目に置く。ハイハットは8分音符で。シンプルに、余白を大切に。</div><div class="step-tip">💡 音符を詰め込まないのがLoFiのコツ。8小節に16個くらいで十分</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-label">ピアノコードを打ち込む</div><div class="step-title">Vintage Electric Pianoでコード進行を入力</div><div class="step-desc">「Fmaj7→Em7→Am7→Dm7」を各2小節ずつ。音符は小節いっぱいまで伸ばす。Velocityは70〜90でランダムに。</div><div class="step-tip">💡 Fmaj7は「F・A・C・E」の4音を同時に押さえる</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-label">ベースを追加</div><div class="step-title">コードのルート音だけをゆっくり弾く</div><div class="step-desc">F→E→A→D の音を各小節の頭に1音だけ置く。長さは2拍分でOK。</div><div class="step-tip">💡 ベースは目立たなくていい。「あると安定する」程度の音量</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-label">LoFi加工をする</div><div class="step-title">STEP 05の魔法テクニックを3つ以上適用する</div><div class="step-desc">まずローパスフィルター（Channel EQ）→ リバーブ（ChromaVerb）→ Bitcrusherの順で試す。音が「こもってくる」のを感じたらOK。</div><div class="step-tip">💡 やりすぎ注意。「なんかLoFiっぽい」程度が正解</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-label">環境音を足す</div><div class="step-title">AlchemyでTape NoiseかRainを常に鳴らす</div><div class="step-desc">音量は−20dBくらいまで下げる。聴こえるか聴こえないかくらいが正解。</div><div class="step-tip">💡 これだけで「作業用BGM感」が出る</div></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-label">フェードアウトで終わらせる</div><div class="step-title">OUTROでマスターフェーダーを徐々に下げる</div><div class="step-desc">Mix → Automation → マスタートラックのフェーダーをOUTROの8小節かけてゼロまで下げる。</div><div class="step-tip">💡 LoFiは「終わる」より「消える」感じが合う</div></div></div>
+  </div>
+
+  <div class="sec-title">CHEAT SHEET ― Fメジャースケール音一覧</div>
+  <div class="scale-row">
+    <div class="scale-note root"><div class="scale-note-name">F</div><div class="scale-note-jp">ファ</div><div class="scale-note-feel">ホーム</div></div>
+    <div class="scale-note"><div class="scale-note-name">G</div><div class="scale-note-jp">ソ</div><div class="scale-note-feel">経過</div></div>
+    <div class="scale-note"><div class="scale-note-name">A</div><div class="scale-note-jp">ラ</div><div class="scale-note-feel">穏やか</div></div>
+    <div class="scale-note"><div class="scale-note-name">Bb</div><div class="scale-note-jp">シ♭</div><div class="scale-note-feel">あたたかい</div></div>
+    <div class="scale-note"><div class="scale-note-name">C</div><div class="scale-note-jp">ド</div><div class="scale-note-feel">安定</div></div>
+    <div class="scale-note"><div class="scale-note-name">D</div><div class="scale-note-jp">レ</div><div class="scale-note-feel">切ない</div></div>
+    <div class="scale-note"><div class="scale-note-name">E</div><div class="scale-note-jp">ミ</div><div class="scale-note-feel">浮遊感</div></div>
+  </div>
+
+  <div class="sec-title">STEP 07 ― 完成チェックリスト</div>
+  <div class="checklist">
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">BPMを80に設定した</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">キーをFメジャーにした</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">Vintage Drum Kitでドラムを作った</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">Vintage Electric Pianoでコードを打ち込んだ</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">ベースのルート音を入れた</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">Channel EQでローパスフィルターをかけた</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">ChromaVerbでリバーブをかけた</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">環境音（テープノイズ or 雨音）を入れた</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">BREAKでドラムをミュートした</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">OUTROでフェードアウトを設定した</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">通して聴いて「眠くなる（いい意味で）」を確認した</div></div></div>
+    <div class="check-item" onclick="this.classList.toggle('done')"><div class="check-box"></div><div><div class="check-text">書き出し（File → Bounce）した</div></div></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  LoFi・チル作曲テンプレ for Logic Pro ｜ 中高大学生向け ｜ 思考停止でOK<br>
+  <span style="color:rgba(255,255,255,.1);font-size:.65rem;margin-top:4px;display:block;">シリーズ：アニソン ✓ ｜ LoFi ✓ ｜ 次：EDM / J-POP / ロック</span>
+</div>
+
+</body>
+</html>
